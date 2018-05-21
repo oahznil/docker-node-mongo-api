@@ -1,0 +1,36 @@
+version: '3'
+
+services:
+  mongo:
+    container_name: nodeApp-mongo
+    image: aashreys/mongo-auth:latest
+    ports:
+      - "${MONGODB_DB_PORT}:27017"
+    volumes:
+      - mongodb:/data/db
+    environment:
+      - AUTH=yes
+      - MONGODB_ADMIN_USER=${MONGODB_ADMIN_USER}
+      - MONGODB_ADMIN_PASS=${MONGODB_ADMIN_PWD}
+      - MONGODB_APPLICATION_DATABASE=${MONGODB_DB_NAME}
+      - MONGODB_APPLICATION_USER=${MONGODB_USER_NAME}
+      - MONGODB_APPLICATION_PASS=${MONGODB_USER_PWD}
+  webapi:
+    container_name: nodeApp-webapi
+    build: .
+    image: node-mongo-webapi
+    ports:
+      - "${WEBAPI_HOST_PORT}:3000"
+    depends_on:
+      - mongo
+    links:
+      - mongo
+    restart: always
+    environment:
+      NODE_ENV: production
+      MONGODB_CONNECTION: "mongodb://${MONGODB_USER_NAME}:${MONGODB_USER_PWD}@mongo/${MONGODB_DB_NAME}"
+    env_file: .env
+    command: bash -c "sleep 10; npm start;"
+volumes:
+  mongodb:
+  redis:
