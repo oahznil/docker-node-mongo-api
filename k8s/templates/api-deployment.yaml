@@ -1,0 +1,67 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert -o k8s --chart
+    kompose.version: 1.12.0 (0ab07be)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: api
+  name: api
+spec:
+  replicas: 1
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        io.kompose.service: api
+    spec:
+      containers:
+      - args:
+        - bash
+        - -c
+        - sleep 10; npm start;
+        env:
+        - name: MONGODB_ADMIN_PWD
+          valueFrom:
+            configMapKeyRef:
+              key: MONGODB_ADMIN_PWD
+              name: api-env
+        - name: MONGODB_ADMIN_USER
+          valueFrom:
+            configMapKeyRef:
+              key: MONGODB_ADMIN_USER
+              name: api-env
+        - name: MONGODB_DB_NAME
+          valueFrom:
+            configMapKeyRef:
+              key: MONGODB_DB_NAME
+              name: api-env
+        - name: MONGODB_DB_PORT
+          valueFrom:
+            configMapKeyRef:
+              key: MONGODB_DB_PORT
+              name: api-env
+        - name: MONGODB_USER_NAME
+          valueFrom:
+            configMapKeyRef:
+              key: MONGODB_USER_NAME
+              name: api-env
+        - name: MONGODB_USER_PWD
+          valueFrom:
+            configMapKeyRef:
+              key: MONGODB_USER_PWD
+              name: api-env
+        - name: WEBAPI_HOST_PORT
+          valueFrom:
+            configMapKeyRef:
+              key: WEBAPI_HOST_PORT
+              name: api-env
+        image: niloahz/docker-node-mongo-api
+        name: docker-node-api
+        ports:
+        - containerPort: 3000
+        resources: {}
+      restartPolicy: Always
+status: {}

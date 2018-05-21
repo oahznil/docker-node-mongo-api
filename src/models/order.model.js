@@ -1,9 +1,9 @@
 import db from '../config/db.config';
 
-export const OrderSchema = new db.Schema({
+export let OrderSchema = new db.Schema({
   orderNumber: {
     type: Number,
-    default: Math.floor(1000 + (Math.random() * 9000)),
+    require: true,
   },
   customer: {
     type: String,

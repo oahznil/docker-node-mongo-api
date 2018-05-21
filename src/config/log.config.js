@@ -30,15 +30,15 @@ const logger = winston.createLogger({
     trace: 5,
   },
   transports: [
-    new(winston.transports.Console)({
+    new winston.transports.Console({
       colorize: true,
       timestamp: true,
     }),
-    // new winston.transports.MongoDB({
-    //   db: config.db.url,
-    //   collection: 'log',
-    //   level: logLevel,
-    // }),
+    new winston.transports.MongoDB({
+      db: config.db.url,
+      collection: 'logs',
+      level: logLevel,
+    }),
   ],
 });
 

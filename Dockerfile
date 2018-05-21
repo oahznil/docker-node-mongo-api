@@ -1,16 +1,15 @@
-#Start with base image
-FROM node:8.9-alpine
+# Start with base image
+FROM node:10.1
 
-# Create app directory
+# Create working directory
 RUN mkdir -p /app
 WORKDIR /app
 
-# Install app dependencies
-COPY ["package.json", "package-lock.json*", "./"]
+# Install dependencies
+COPY package.json /app/
 RUN npm install
 
-# Bundle app source
+# Bundle source
 COPY . /app/
 
-# expose the port to outside world
 EXPOSE 3000
