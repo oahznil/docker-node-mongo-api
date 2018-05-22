@@ -1,0 +1,112 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: node-app-mongodb
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: node-app-mongodb
+    spec:
+      containers:
+      - name: node-app-mongodb
+        image: aashreys/mongo-auth:latest
+        ports:
+        - containerPort: 27017
+        env:
+        - name: AUTH
+          value: "yes"
+        - name: MONGODB_ADMIN_PASS
+        - name: MONGODB_ADMIN_USER
+        - name: MONGODB_APPLICATION_DATABASE
+        - name: MONGODB_APPLICATION_PASS
+        - name: MONGODB_APPLICATION_USER
+        volumeMounts:
+        - name: mongo-storage
+          mountPath: /data
+      volumes:
+      - name: mongo-storage
+        persistentVolumeClaim:
+          claimName: mongodb-claim
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: node-app-mongodb
+spec:
+  type: NodePort
+  ports:
+  - name: "27017"
+    port: 27017
+    targetPort: 27017
+  selector:
+    app: node-app-mongodb
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mongodb-claim
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: node-app-webapi
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: node-app-webapi
+    spec:
+      containers:
+      - name: node-app-webapi
+        image: niloahz/docker-node-mongo-api
+        ports:
+        - containerPort: 3000
+        args:
+          - bash
+          - -c
+          - sleep 10; npm start;
+        env:
+        - name: MONGODB_ADMIN_PWD
+          value: "password"
+        - name: MONGODB_ADMIN_USER
+          value: "admin"
+        - name: MONGODB_DB_NAME
+          value: "orders"
+        - name: MONGODB_DB_PORT
+          value: "27017"
+        - name: MONGODB_USER_NAME
+          value: "user"
+        - name: MONGODB_USER_PWD
+          value: "password"
+        - name: WEBAPI_HOST_PORT
+          value: "3000" 
+        - name: NODE_ENV
+          value: "production"
+        - name: MONGODB_CONNECTION
+          value: "mongodb://user:password@mongo:27017/orders"
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: node-app-webapi
+spec:
+  type: NodePort
+  ports:
+  - name: "3000"
+    port: 3000
+    targetPort: 3000
+  selector:
+    app: node-app-webapi
+
+                          
