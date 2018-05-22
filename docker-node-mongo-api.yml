@@ -17,11 +17,16 @@ spec:
         env:
         - name: AUTH
           value: "yes"
-        - name: MONGODB_ADMIN_PASS
         - name: MONGODB_ADMIN_USER
+          value: "admin"          
+        - name: MONGODB_ADMIN_PASS
+          value: "password"
         - name: MONGODB_APPLICATION_DATABASE
-        - name: MONGODB_APPLICATION_PASS
+          value: "orders"
         - name: MONGODB_APPLICATION_USER
+          value: "user"
+        - name: MONGODB_APPLICATION_PASS
+          value: "password"
         volumeMounts:
         - name: mongo-storage
           mountPath: /data
@@ -93,7 +98,7 @@ spec:
         - name: NODE_ENV
           value: "production"
         - name: MONGODB_CONNECTION
-          value: "mongodb://user:password@mongo:27017/orders"
+          value: "mongodb://user:password@node-app-mongodb/orders"
       restartPolicy: Always
 ---
 apiVersion: v1
